@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<script type="text/javascript" src="number.js"></script>
+<script type="text/javascript">
+var widthOfCanvas = 1000;
+var heightOfCanvas = 400;
+var radius = 6;
+var startTop = 150;
+var startLeft = 70;
+var remainingSec = 0;
+const endTime = new Date(2016,3,21,14,48,40);//设置目标时间
+//alert(endTime.getTime() - date.getTime());
+var balls = new Array();
+var colors = ['#C63A20','#794E7B','#f0f','#CCE83C','#0ff','#867969'];
+window.onload = function () {
+	widthOfCanvas = document.body.clientWidth;
+	heightOfCanvas = document.body.clientHeight;
+	startLeft = Math.round(widthOfCanvas/5);
+	var canvas = document.getElementById('can');
+	canvas.width = widthOfCanvas;
+	canvas.height = heightOfCanvas;
+	context = canvas.getContext("2d");	
+	remainingSec = getRemainingSec();
+	setInterval(function(){
+		clockSet();
+		update();
+		console.log(balls.length);
+	},50);
+}
+
+function drawSingleNum(num,startX,startY,context){	
+	context.fillStyle = '#099';
+	for (var i = 0; i < digit[num].length; i++) {
+		for (var  j = 0;  j< digit[num][i].length; j++) {
+			if (digit[num][i][j] == 1) {
+				context.beginPath();
+				context.arc(startX + j*2*(radius+1)+radius+1 ,startY+i*2*(radius+1)+radius+1 , radius ,0, 2*Math.PI);
+				context.closePath();
+				context.fill();
+			}
+		}	
+	}
+}
+
+function getRemainingSec() {
+	var date =  new Date();
+	var re = Math.round((endTime.getTime() - date.getTime())/1000);
+	date = null;//手动回收
+	return re>0?re:0;
+}
+
+function update() {
+	var nextRemainingSec = getRemainingSec();
+
+	var nextHour = parseInt(nextRemainingSec/3600);
+	var nextMinute = parseInt((nextRemainingSec%3600)/60);
+	var nextSecond = nextRemainingSec%60;
+
+	var curHour = parseInt(remainingSec/3600);
+	var curMinute = parseInt((remainingSec%3600)/60);
+	var curSecond = remainingSec%60;
+
+	if (nextSecond != curSecond) {
+		remainingSec = nextRemainingSec;
+
+		if (nextSecond%10 != curSecond%10) {
+			addBall(curSecond%10,startLeft + 50*(radius+1)*2,startTop);
+		}
+		if (parseInt(nextSecond/10) != parseInt(curSecond/10)) {
+			addBall(parseInt(curSecond/10),startLeft + 42*(radius+1)*2,startTop);
+		}
+		if (parseInt(nextMinute%10) != parseInt(curMinute%10)) {
+			addBall(parseInt(curSecond%10),startLeft + 29*(radius+1)*2,startTop);
+		}
+		if (parseInt(nextMinute/10) != parseInt(curMinute/10)) {
+			addBall(parseInt(curSecond/10),startLeft + 21*(radius+1)*2,startTop);
+		}
+		if (parseInt(nextHour%10) != parseInt(curHour%10)) {
+			addBall(parseInt(curHour%10),startLeft + 8*(radius+1)*2,startTop);
+		}
+		if (parseInt(nextHour/10) != parseInt(curHour/10)) {
+			addBall(parseInt(curHour/10),startLeft + 0,startTop);
+		}
+	}
+
+	updateBall();
+}
+
+function updateBall() {
+	var countOfInside = 0;//小球必然运动出去，运动出去之后将其放回数组最前面，把超出限制数量的球pop掉
+	for (var i = 0; i < balls.length; i++) {
+		balls[i].vy= (balls[i].vy>0)?Math.floor(balls[i].vy):Math.ceil(balls[i].vy);//vy用哪个取整方法由其是否大于零
+		balls[i].vy+=balls[i].g;
+		balls[i].x+=balls[i].vx;
+		balls[i].y+=balls[i].vy;
+
+		if (balls[i].y > heightOfCanvas-balls[i].r) {
+
+			balls[i].y = heightOfCanvas-balls[i].r;
+			balls[i].vy *= -0.8;			
+			balls[i].vx *= 0.9;
+			balls[i].vx = Math.round(balls[i].vx);
+		}
+	}
+	for (var i = 0; i < balls.length; i++) {
+		if (balls[i].x - balls[i].r > 0 && balls[i].x - balls[i].r < widthOfCanvas) {
+			balls[countOfInside++] = balls[i];
+		}
+	}
+	while(balls.length > countOfInside){//Math.min(300,countOfInside)这种方法只会更新秒的数字？？？
+		balls.pop();
+	}
+}
+
+function addBall(num,startX,startY) {
+	for (var i = 0; i < digit[num].length; i++) {
+		for (var  j = 0;  j< digit[num][i].length; j++) {
+			if (digit[num][i][j] == 1) {
+				var aBall = {
+					x:startX + j*2*(radius+1)+radius+1,
+					y:startY+i*2*(radius+1)+radius+1,
+					vx: Math.pow(-1, Math.floor(Math.random()*10) )*Math.floor(Math.random()*5+1),
+					vy: Math.pow(-1, Math.floor(Math.random()*10) )*6,
+					g:3,
+					r:radius
+				};
+
+				balls.push(aBall);
+			}
+		}	
+	}
+}
+
+function clockSet() {
+
+	var hour = parseInt(remainingSec/3600);
+	var minute = parseInt((remainingSec%3600)/60);
+	var second = remainingSec%60;
+ 	context.clearRect(0,0,widthOfCanvas,heightOfCanvas);
+
+	drawSingleNum(parseInt(hour/10),startLeft + 0,startTop,context);
+	drawSingleNum(hour%10,startLeft + 8*(radius+1)*2,startTop,context);
+	drawSingleNum(10,startLeft + 16*(radius+1)*2,startTop,context);
+	drawSingleNum(parseInt(minute/10),startLeft + 21*(radius+1)*2,startTop,context);
+	drawSingleNum(minute%10,startLeft + 29*(radius+1)*2,startTop,context);
+	drawSingleNum(10,startLeft + 37*(radius+1)*2,startTop,context);
+	drawSingleNum(parseInt(second/10),startLeft + 42*(radius+1)*2,startTop,context);
+	drawSingleNum(second%10,startLeft + 50*(radius+1)*2,startTop,context);
+
+
+	for (var i = 0; i < balls.length; i++) {
+		context.beginPath();
+		context.fillStyle = colors[Math.floor(Math.random()*colors.length)];
+		context.arc(balls[i].x,balls[i].y,radius,0,Math.PI * 2);
+		context.closePath();
+		context.fill();
+	}
+}
+
+</script>
+</head>
+<body>
+<canvas id="can" width="100%" height="450px">
+	当前浏览器不支持Canvas，请更换浏览器后再试
+</canvas>
+</body>
+</html>
