@@ -5,9 +5,10 @@
 <title>CLOCK</title>
 <style type="text/css">
 html{background-color: #333;}
-.btn{display: block; width: 250px; box-sizing: border-box;height: 50px; line-height: 50px; margin: 0 auto;
+.btnWrap{width: 250px;height: 50px;margin: 0 auto;}
+.btn{display: block; width: 100%; box-sizing: border-box; line-height: 100%; margin: 0 auto;
 	border: 2px solid #fff;background: url(images/allow.png) 190px center  no-repeat; position: relative;
-	text-decoration: none;padding: 0 50px 15px 20px; font-size: 18px; font-weight: bold; font-family: "simsun"; color:#2FB36A; 	
+	text-decoration: none;padding: 15px 50px 15px 20px; font-size: 18px; font-family: "Microsoft Yahei"; color:#2FB36A; 	
 	transition: ease-out .2s;
 	-webkit-transition: ease-out .2s ;
 	-o-transition:  ease-out .2s;
@@ -194,6 +195,7 @@ function clockSet() {
 </head>
 <body>
 <canvas id="can" width="1200" height="400px"></canvas>
+<div class="btnWrap">
 <a href="倒计时.html" class="btn">
 	去看看倒计时效果
 	<span class="line line-top"></span>
@@ -201,5 +203,6 @@ function clockSet() {
 	<span class="line line-bottom"></span>
 	<span class="line line-left"></span>
 </a>
+</div>
 </body>
 </html>
