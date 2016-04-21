@@ -1,62 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset='utf-8'>
-<title>CLOCK</title>
+<title></title>
 <style type="text/css">
-html{background-color: #333;}
-.btn{display: block; width: 250px; box-sizing: border-box;height: 50px; line-height: 50px; margin: 0 auto;
-	border: 2px solid #fff;background: url(images/allow.png) 190px center  no-repeat; position: relative;
-	text-decoration: none;padding: 0 50px 15px 20px; font-size: 18px; font-weight: bold; font-family: "simsun"; color:#2FB36A; 	
-	transition: ease-out .2s;
-	-webkit-transition: ease-out .2s ;
-	-o-transition:  ease-out .2s;
-	-moz-transition:  ease-out .2s;
-}
-.btn:hover{border-color: #2FB36A;background-position: 205px center;}
-
-.btn .line{display: block; position: absolute;border: none;background-color:#2FB36A ;
-	transition:ease-out .2s;
-	-webkit-transition:ease-out .2s;
-	-o-transition:ease-out .2s;
-	-moz-transition:ease-out .2s;
-}
-.line-top,.line-bottom{height: 2px; width: 0;}
-.line-right,.line-left{width: 2px; height: 0;}
-
-.line-top{width: 0;left: -100%;top: -2px;}
-.btn:hover .line-top{width: 100%;left: -2px;}
-
-.line-bottom{width: 0;right: -100%;bottom: -2px;}
-.btn:hover .line-bottom{width: 100%;right: -2px;}
-
-.line-right{height: 0;top: -100%;right: -2px;}
-.btn:hover .line-right{height: 100%;top: -2px;}
-
-.line-left{height: 0;bottom: -100%;left: -2px;}
-.btn:hover .line-left{height: 100%;bottom: -2px;}
-
-
-
-
+#can{border: 3px solid #ccc;margin-left: 200px;}
 </style>
 <script type="text/javascript" src="number.js"></script>
 <script type="text/javascript">
 var widthOfCanvas = 1000;
-var heightOfCanvas = 500;
+var heightOfCanvas = 400;
 var radius = 6;
-var startTop = 150;
+var startTop = 50;
 var startLeft = 70;
-var curDate = new Date();
+var remainingSec = 0;
+const endTime = new Date(2016,3,21,14,48,40);//设置目标时间
+//alert(endTime.getTime() - date.getTime());
 var balls = new Array();
 var colors = ['red','blue','#f0f','green','#0ff'];
 window.onload = function () {
 	var canvas = document.getElementById('can');
-	widthOfCanvas = document.body.clientWidth;
+	canvas.width = widthOfCanvas;
 	canvas.height = heightOfCanvas;
-	startLeft = Math.round(widthOfCanvas/5)
 	context = canvas.getContext("2d");	
-	curDate = getTime();
+	// remainingSec = getRemainingSec();
 	setInterval(function(){
 		clockSet();
 		update();
@@ -77,24 +43,32 @@ function drawSingleNum(num,startX,startY,context){
 	}
 }
 
+// function getRemainingSec() {
+// 	var date =  new Date();
+// 	var re = Math.round((endTime.getTime() - date.getTime())/1000);
+// 	date = null;//清除垃圾
+// 	return re;
+// }
 
 function getTime() {
 	var date =  new Date();
-	return date;
+	var re = Math.round(date.getTime()/1000);
+	date = null;//清除垃圾
+	return re;
 }
 function update() {
-	var nextDate = getTime();
+	var nextRemainingSec = getTime();
 
-	var nextHour = nextDate.getHours();
-	var nextMinute = nextDate.getMinutes();
-	var nextSecond = nextDate.getSeconds();
+	var nextHour = parseInt(nextRemainingSec/3600);
+	var nextMinute = parseInt((nextRemainingSec%3600)/60);
+	var nextSecond = nextRemainingSec%60;
 
-	var curHour = curDate.getHours();
-	var curMinute = curDate.getMinutes();
-	var curSecond = curDate.getSeconds();
+	var curHour = parseInt(remainingSec/3600);
+	var curMinute = parseInt((remainingSec%3600)/60);
+	var curSecond = remainingSec%60;
 
 	if (nextSecond != curSecond) {
-		curDate = nextDate;
+		remainingSec = nextRemainingSec;
 
 		if (nextSecond%10 != curSecond%10) {
 			addBall(curSecond%10,startLeft + 50*(radius+1)*2,startTop);
@@ -120,7 +94,7 @@ function update() {
 }
 
 function updateBall() {
-	var countOfInside = 0;//小球必然运动出去，运动出去之后将其放回数组最前面，把超出限制数量的球pop掉，用于性能优化
+	var countOfInside = 0;//小球必然运动出去，运动出去之后将其放回数组最前面，把超出限制数量的球pop掉
 	for (var i = 0; i < balls.length; i++) {
 		balls[i].x+=balls[i].vx;
 		balls[i].y+=Math.floor(balls[i].vy);
@@ -134,13 +108,12 @@ function updateBall() {
 			balls[i].vx = Math.round(balls[i].vx);
 		}
 	}
-	/*性能优化*/
 	for (var i = 0; i < balls.length; i++) {
-		if (balls[i].y - balls[i].r > 0 ) {
+		if (balls[i].x - balls[i].r > 0 && balls[i].x - balls[i].r < widthOfCanvas) {
 			balls[countOfInside++] = balls[i];
 		}
 	}
-	while(balls.length > countOfInside){//Math.min(300,countOfInside)这种方法只会更新秒的数字？？？
+	while(balls.length > countOfInside){//Math.min(300,countOfInside)
 		balls.pop();
 	}
 }
@@ -166,9 +139,13 @@ function addBall(num,startX,startY) {
 
 function clockSet() {
 
-	var hour = curDate.getHours();
-	var minute = curDate.getMinutes();
-	var second = curDate.getSeconds();
+	// var hour = parseInt(remainingSec/3600);
+	// var minute = parseInt((remainingSec%3600)/60);
+	// var second = remainingSec%60;
+	var date = new Date();
+	var hour = date.getHours();
+	var minute = date.getMinutes();
+	var second = date.getSeconds();
  	context.clearRect(0,0,widthOfCanvas,heightOfCanvas);
 
 	drawSingleNum(parseInt(hour/10),startLeft + 0,startTop,context);
@@ -193,13 +170,6 @@ function clockSet() {
 </script>
 </head>
 <body>
-<canvas id="can" width="1200" height="400px"></canvas>
-<a href="倒计时.html" class="btn">
-	去看看倒计时效果
-	<span class="line line-top"></span>
-	<span class="line line-right"></span>
-	<span class="line line-bottom"></span>
-	<span class="line line-left"></span>
-</a>
+<canvas id="can" width="900px" height="400px"></canvas>
 </body>
 </html>

@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>倒计时</title>
+<title></title>
 <script type="text/javascript" src="number.js"></script>
 <script type="text/javascript">
 var widthOfCanvas = 1000;
@@ -27,6 +26,7 @@ window.onload = function () {
 	setInterval(function(){
 		clockSet();
 		update();
+		console.log(balls.length);
 	},50);
 }
 
@@ -161,7 +161,7 @@ function clockSet() {
 
 </script>
 </head>
-<body style="background-color: #333;">
+<body>
 <canvas id="can" width="100%" height="450px">
 	当前浏览器不支持Canvas，请更换浏览器后再试
 </canvas>
