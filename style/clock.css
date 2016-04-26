@@ -1,0 +1,32 @@
+body{background-color: #333;}
+.btnWrap{width: 250px;height: 50px;margin: 0 auto;}
+.btn{display: block; width: 100%; box-sizing: border-box; line-height: 100%; margin: 0 auto;
+	border: 2px solid #fff;background: url(../images/allow.png) 190px center  no-repeat; position: relative;
+	text-decoration: none;padding: 15px 50px 15px 20px; font-size: 18px; font-family: "Microsoft Yahei"; color:#2FB36A; 	
+	transition: ease-out .2s;
+	-webkit-transition: ease-out .2s ;
+	-o-transition:  ease-out .2s;
+	-moz-transition:  ease-out .2s;
+}
+.btn:hover{border-color: #2FB36A;background-position: 205px center;}
+
+.btn .line{display: block; position: absolute;border: none;background-color:#2FB36A ;
+	transition:ease-out .2s;
+	-webkit-transition:ease-out .2s;
+	-o-transition:ease-out .2s;
+	-moz-transition:ease-out .2s;
+}
+.line-top,.line-bottom{height: 2px; width: 0;}
+.line-right,.line-left{width: 2px; height: 0;}
+
+.line-top{width: 0;left: -100%;top: -2px;}
+.btn:hover .line-top{width: 100%;left: -2px;}
+
+.line-bottom{width: 0;right: -100%;bottom: -2px;}
+.btn:hover .line-bottom{width: 100%;right: -2px;}
+
+.line-right{height: 0;top: -100%;right: -2px;}
+.btn:hover .line-right{height: 100%;top: -2px;}
+
+.line-left{height: 0;bottom: -100%;left: -2px;}
+.btn:hover .line-left{height: 100%;bottom: -2px;}
