@@ -3,27 +3,80 @@
 <head>
 <meta charset="utf-8">
 <title>倒计时</title>
+<style type="text/css">
+	*{margin: 0;padding: 0;}
+	#days-left{position: absolute;color: #099;font-weight: bolder;font-family: "Microsoft Yahei";}
+	#days-left #tip{font-size: 15px;}
+	#days-left #data{font-size: 80px;color: #0ff;}
+	header{width: 100%;text-align: center;margin-top: 50px;}
+	header #headTxt{color: #099;font-size: 40px;font-family: "Microsoft Yahei";}
+	#targetSet{width: 100%;text-align: center;color: #099;font-size: 15px;font-family: "Microsoft Yahei"}
+	#targetSet input{display: inline-block;border-radius: 3px;border: none;width: 20px;text-align: center;color: #0ff; background-color: #666;}
+	#targetSet input[id="yearSet"]{width: 3em;}
+	#targetSet #timeSet-btn{display: block; width: 9em; height: 2em; line-height: 2em; margin: 3px auto;text-decoration: none;color: #fff; background-color: transparent; border-radius: 3em;border: 2px solid #fff;
+
+		transition: 1s ease-in-out;
+		-moz-transition: 1s ease-in-out;
+		-webkit-transition: 1s ease-in-out;
+		-o-transition: 1s ease-in-out;
+	}
+
+	#targetSet #timeSet-btn:hover{border-radius: 12px;background-color: #099;color: #fff;font-weight: bolder;border-color: #066;}
+
+</style>
 <script type="text/javascript" src="number.js"></script>
 <script type="text/javascript">
 var widthOfCanvas = 1000;
-var heightOfCanvas = 400;
+var heightOfCanvas = 450;
 var radius = 6;
 var startTop = 150;
 var startLeft = 70;
 var remainingSec = 0;
-const endTime = new Date(2016,3,21,14,48,40);//设置目标时间
+var endTime = new Date(2017,3,27,22,44,0);;//设置目标时间
 //alert(endTime.getTime() - date.getTime());
 var balls = new Array();
 var colors = ['#C63A20','#794E7B','#f0f','#CCE83C','#0ff','#867969'];
+var timeSetBtn = null, yearSetTxt = null;
+var oDaysLeft = null,oDaysLeftData = null,oDaysLeftTip = null;
+var headTxt = null;
 window.onload = function () {
 	widthOfCanvas = document.body.clientWidth;
-	heightOfCanvas = document.body.clientHeight;
 	startLeft = Math.round(widthOfCanvas/5);
 	var canvas = document.getElementById('can');
 	canvas.width = widthOfCanvas;
 	canvas.height = heightOfCanvas;
 	context = canvas.getContext("2d");	
+
+	headTxt = document.getElementById('headTxt');
+	headTxt.innerHTML = '距离' + endTime.getFullYear() + '年' + (endTime.getMonth()+1) + '月' + 
+		endTime.getDate() + '日'+ endTime.getHours() + '时' + endTime.getMinutes() + '分' + '还有：';
+	timeSetBtn = document.getElementById('timeSet-btn');
+	yearSetTxt = document.getElementById('yearSet');
+	monthSetTxt = document.getElementById('monthSet');
+	daySetTxt = document.getElementById('daySet');
+	hourSetTxt = document.getElementById('hourSet');
+	minuteSetTxt = document.getElementById('minuteSet');
+
+	timeSetBtn.onclick = function(){
+		var year = yearSetTxt.value;
+		var month = monthSetTxt.value - 1;
+		var day = daySetTxt.value;
+		var hour = hourSetTxt.value;
+		var minute = minuteSetTxt.value;
+
+		endTime = new Date(year,month,day,hour,minute,0);//设置目标时间
+		headTxt.innerHTML = '距离' + endTime.getFullYear() + '年' + (endTime.getMonth()+1) + '月' + 
+		endTime.getDate() + '日'+ endTime.getHours() + '时' + endTime.getMinutes() + '分' + '还有：';
+	};
+
 	remainingSec = getRemainingSec();
+	oDaysLeft = document.getElementById('days-left');
+	oDaysLeft.style.top = startTop - oDaysLeft.offsetHeight + 100 + 'px';
+	oDaysLeft.style.left = startLeft  + 'px';
+	oDaysLeftData = document.getElementById('data');
+	oDaysLeftTip = document.getElementById('tip');
+	oDaysLeftData.innerHTML = Math.floor(remainingSec/86400);
+
 	setInterval(function(){
 		clockSet();
 		update();
@@ -31,7 +84,7 @@ window.onload = function () {
 }
 
 function drawSingleNum(num,startX,startY,context){	
-	context.fillStyle = '#099';
+	context.fillStyle = '#0ff';
 	for (var i = 0; i < digit[num].length; i++) {
 		for (var  j = 0;  j< digit[num][i].length; j++) {
 			if (digit[num][i][j] == 1) {
@@ -54,11 +107,13 @@ function getRemainingSec() {
 function update() {
 	var nextRemainingSec = getRemainingSec();
 
-	var nextHour = parseInt(nextRemainingSec/3600);
+	var nextDay = parseInt(nextRemainingSec/86400);
+	var nextHour = parseInt((nextRemainingSec%86400)/3600);
 	var nextMinute = parseInt((nextRemainingSec%3600)/60);
 	var nextSecond = nextRemainingSec%60;
 
-	var curHour = parseInt(remainingSec/3600);
+	var curDay = parseInt(remainingSec/86400);
+	var curHour = parseInt((remainingSec%86400)/3600);
 	var curMinute = parseInt((remainingSec%3600)/60);
 	var curSecond = remainingSec%60;
 
@@ -135,9 +190,11 @@ function addBall(num,startX,startY) {
 
 function clockSet() {
 
-	var hour = parseInt(remainingSec/3600);
+	var day = parseInt(remainingSec/86400);
+    var hour = parseInt((remainingSec%86400)/3600);
 	var minute = parseInt((remainingSec%3600)/60);
 	var second = remainingSec%60;
+	oDaysLeftData.innerHTML = day;
  	context.clearRect(0,0,widthOfCanvas,heightOfCanvas);
 
 	drawSingleNum(parseInt(hour/10),startLeft + 0,startTop,context);
@@ -148,7 +205,6 @@ function clockSet() {
 	drawSingleNum(10,startLeft + 37*(radius+1)*2,startTop,context);
 	drawSingleNum(parseInt(second/10),startLeft + 42*(radius+1)*2,startTop,context);
 	drawSingleNum(second%10,startLeft + 50*(radius+1)*2,startTop,context);
-
 
 	for (var i = 0; i < balls.length; i++) {
 		context.beginPath();
@@ -162,8 +218,24 @@ function clockSet() {
 </script>
 </head>
 <body style="background-color: #333;">
-<canvas id="can" width="100%" height="450px">
+
+<header>
+	<span id="headTxt">hhhdsfsfdsfsfsfsf</span>
+</header>
+
+<div id="days-left">
+	<span id="data">2</span><span id="tip">天</span>
+</div>
+<canvas id="can" width="100%">
 	当前浏览器不支持Canvas，请更换浏览器后再试
 </canvas>
+<div id="targetSet"><label for="yearSet">输入设置倒计时</label>
+	<input id="yearSet" type="text" value="年" /><label for="yearSet">年</label>
+	<input id="monthSet" type="text" value="月" /><label for="monthSet">月</label>
+	<input id="daySet" type="text" value="日" /><label for="daySet">日</label>
+	<input id="hourSet" type="text" value="时" /><label for="hourSet">时</label>
+	<input id="minuteSet" type="text" value="分" /><label for="minuteSet">分</label>
+	<a id="timeSet-btn" href="javascript:">设置时间</a>
+</div>
 </body>
 </html>
