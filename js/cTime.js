@@ -4,7 +4,7 @@ var radius = 6;
 var startTop = 150;
 var startLeft = 70;
 var remainingSec = 0;
-var endTime = new Date(2017,3,27,22,44,0);;//设置目标时间
+var endTime = new Date(2027,3,27,22,44,0);;//设置目标时间
 var balls = new Array();
 var colors = ['#C63A20','#794E7B','#f0f','#CCE83C','#0ff','#867969'];
 var timeSetBtn = null, yearSetTxt = null;
